@@ -1,10 +1,15 @@
+using RestWithAspNet10.Services;
+using RestWithAspNet10.Interface;
+using RestWithAspNet10.Configurations;
+using RestWithAspNet10.repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// registra controllers
 builder.Services.AddControllers();
-
-// OpenAPI (Swagger)
+builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddOpenApi();
+builder.Services.AddMSSQLServerSQLConnection(builder.Configuration);
 
 var app = builder.Build();
 
