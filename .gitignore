@@ -37,6 +37,9 @@ artifacts/
 *.pidb
 *.svclog
 *.pdb   
+*.dll
+*.pdb
+
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
