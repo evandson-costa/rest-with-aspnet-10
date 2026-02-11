@@ -12,21 +12,25 @@ namespace RestWithAspNet10.Controller;
 public class PersonController : ControllerBase
 {
     private readonly IPersonService _personService;
+    private readonly ILogger<PersonController> _logger;
 
-    public PersonController(IPersonService personService)
+    public PersonController(IPersonService personService, ILogger<PersonController> logger)
     {
         _personService = personService;
+        _logger = logger;
     }
 
     [HttpGet]
     public IActionResult Get()
     {
+        _logger.LogInformation("Retrieving all persons");
         return Ok(_personService.FindAll());
     }
 
     [HttpGet("{id}")]
     public IActionResult Get(long id)
     {
+        _logger.LogInformation("Retrieving by ID: {Id}", id);
         var person = _personService.FindById(id);
         if (person == null) return NotFound();
         return Ok(person);
@@ -36,7 +40,12 @@ public class PersonController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromBody] Person person)
     {
-        if (person == null) return BadRequest();
+        _logger.LogInformation("Retrieving by first name {Id}", person.FirstName);
+        if (person == null)
+        {
+            _logger.LogWarning("Received null person object");
+            return BadRequest();
+        }
         return Ok(_personService.Create(person));
     }
 
@@ -52,8 +61,11 @@ public class PersonController : ControllerBase
     {
         if (person == null) return BadRequest();
         var updatedPerson = _personService.Update(person);
-        if (updatedPerson == null) return NotFound();
+        if (updatedPerson == null)
+        {
+            _logger.LogError("Person with ID {Id} not found for update", person.Id);
+            return NotFound();
+        } 
         return Ok(updatedPerson);
-
     }
 }

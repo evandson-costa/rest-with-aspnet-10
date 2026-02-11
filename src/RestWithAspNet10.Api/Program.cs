@@ -10,6 +10,7 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddOpenApi();
 builder.Services.AddMSSQLServerSQLConnection(builder.Configuration);
+builder.AddSerilog();
 
 var app = builder.Build();
 
