@@ -5,12 +5,14 @@ using RestWithAspNet10.repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddSerilog();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddOpenApi();
 builder.Services.AddMSSQLServerSQLConnection(builder.Configuration);
-builder.AddSerilog();
+builder.Services.AddEvolveConfiguration(builder.Configuration, builder.Environment);
+
 
 var app = builder.Build();
 
