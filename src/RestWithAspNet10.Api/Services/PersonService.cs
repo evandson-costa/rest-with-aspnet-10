@@ -1,6 +1,8 @@
+using Mapster;
 using Microsoft.AspNetCore.Routing.Template;
 using RestWithAspNet10.Interface;
 using RestWithAspNet10.Model;
+using RestWithAspNet10.Model.DTO;
 
 namespace RestWithAspNet10.Services;
 
@@ -14,39 +16,34 @@ public class PersonService : IPersonService
         _repository = repository;
     }
 
-    public Person Create(Person person)
+    public async Task<PersonDTO> Create(PersonDTO person)
     {
-        return _repository.Create(person);
+        var map = person.Adapt<Person>();
+        var createdPerson = await _repository.Create(map);
+        return createdPerson.Adapt<PersonDTO>();
     }
 
-    public void Delete(long id)
+    public async Task<List<PersonDTO>> FindAll()
     {
-        _repository.Delete(id);
+        var persons = await _repository.FindAll();
+        return persons.Adapt<List<PersonDTO>>();
     }
 
-    public List<Person> FindAll()
+    public async Task<PersonDTO> FindById(long id)
     {
-
-        return _repository.FindAll();
+        var person = await _repository.FindById(id);
+        return person.Adapt<PersonDTO>();
     }
 
-
-    public Person FindById(long id)
+    public async Task<PersonDTO> Update(PersonDTO person)
     {
-         return _repository.FindById(id);
+        var personToUpdate = person.Adapt<Person>();
+        var updatedPerson = await _repository.Update(personToUpdate);
+        return updatedPerson.Adapt<PersonDTO>();
     }
 
-    public Person Update(Person person)
+    public async Task Delete(long id)
     {
-
-        var personToUpdate = _repository.FindById(person.Id);
-
-        personToUpdate.FirstName = person.FirstName;
-        personToUpdate.LastName = person.LastName;
-        personToUpdate.Address = person.Address;
-        personToUpdate.Gender = person.Gender;
-
-        _repository.Update(personToUpdate);
-        return personToUpdate;
+        await _repository.Delete(id);
     }
 }

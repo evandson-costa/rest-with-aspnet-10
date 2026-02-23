@@ -1,3 +1,4 @@
+using RestWithAspNet10.Api.Interface.Base;
 using RestWithAspNet10.Interface;
 using RestWithAspNet10.Model;
 
@@ -6,39 +7,36 @@ namespace RestWithAspNet10.repository;
 public class PersonRepository : IPersonRepository
 {
 
-    private readonly MSSQLContext _context;
+    private readonly IGenericRepository<Person> _context;
 
-    public PersonRepository(MSSQLContext context)
+    public PersonRepository(IGenericRepository<Person> context)
     {
         _context = context;
     }
 
-    public List<Person> FindAll()
+    public async Task<List<Person>> FindAll()
     {
-        return _context.Persons.ToList();
+        return (await _context.GetAllAsync()).ToList();
     }
 
-    public Person Create(Person person)
+    public async Task<Person> Create(Person person)
     {
-        _context.Persons.Add(person);
-        _context.SaveChanges();
+        await _context.CreateAsync(person);
         return person;
     }
 
-    public void Delete(long id)
+    public async Task Delete(long id)
     {
-        var person = _context.Persons.SingleOrDefault(p => p.Id == id);
+        var person = await _context.GetByIdAsync(id);
         if (person != null)
         {
-            _context.Persons.Remove(person);
-            _context.SaveChanges();
+            await _context.DeleteAsync(id);
         }
     }
 
-
-    public Person FindById(long id)
+    public async Task<Person> FindById(long id)
     {
-        var person = _context.Persons.SingleOrDefault(p => p.Id == id);
+        var person = await _context.GetByIdAsync(id);
 
         if (person == null)
             return null;
@@ -46,15 +44,10 @@ public class PersonRepository : IPersonRepository
             return person;
     }
 
-    public Person Update(Person person)
+    public async Task<Person> Update(Person person)
     {
 
-        var existingPerson = _context.Persons.SingleOrDefault(p => p.Id == person.Id);
-        if (existingPerson == null)
-            return null;
-
-        _context.Entry(existingPerson).CurrentValues.SetValues(person);
-        _context.SaveChanges();
+        await _context.UpdateAsync(person);
         return person;
     }
 }

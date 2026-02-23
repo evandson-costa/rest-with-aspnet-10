@@ -4,9 +4,9 @@ namespace RestWithAspNet10.Interface;
 
 public interface IPersonRepository
 {
-    Person Create(Person person);
-    Person FindById(long id);
-    List<Person> FindAll();
-    Person Update(Person person);
-    void Delete(long id);
+    Task<Person> Create(Person person);
+    Task<Person> FindById(long id);
+    Task<List<Person>> FindAll();
+    Task<Person> Update(Person person);
+    Task Delete(long id);
 }

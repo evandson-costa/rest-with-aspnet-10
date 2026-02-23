@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using RestWithAspNet10.Model;
+using RestWithAspNet10.Model.DTO;
 
 namespace RestWithAspNet10.Controller;
 
@@ -21,24 +22,26 @@ public class PersonController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
         _logger.LogInformation("Retrieving all persons");
-        return Ok(_personService.FindAll());
+
+        // Adicione o 'await' aqui para extrair o resultado da Task
+        return Ok(await _personService.FindAll());
     }
 
     [HttpGet("{id}")]
-    public IActionResult Get(long id)
+    public async Task<IActionResult> Get(long id)
     {
         _logger.LogInformation("Retrieving by ID: {Id}", id);
-        var person = _personService.FindById(id);
+        var person = await _personService.FindById(id);
         if (person == null) return NotFound();
         return Ok(person);
 
     }
 
     [HttpPost]
-    public IActionResult Post([FromBody] Person person)
+    public async Task<IActionResult> Post([FromBody] PersonDTO person)
     {
         _logger.LogInformation("Retrieving by first name {Id}", person.FirstName);
         if (person == null)
@@ -46,26 +49,26 @@ public class PersonController : ControllerBase
             _logger.LogWarning("Received null person object");
             return BadRequest();
         }
-        return Ok(_personService.Create(person));
+        return Ok(await _personService.Create(person));
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(long id)
+    public async Task<IActionResult> Delete(long id)
     {
-        _personService.Delete(id);
+        await _personService.Delete(id);
         return NoContent();
     }
 
     [HttpPut]
-    public IActionResult Put([FromBody] Person person)
+    public async Task<IActionResult> Put([FromBody] PersonDTO person)
     {
         if (person == null) return BadRequest();
-        var updatedPerson = _personService.Update(person);
+        var updatedPerson = await _personService.Update(person);
         if (updatedPerson == null)
         {
             _logger.LogError("Person with ID {Id} not found for update", person.Id);
             return NotFound();
-        } 
+        }
         return Ok(updatedPerson);
     }
 }
